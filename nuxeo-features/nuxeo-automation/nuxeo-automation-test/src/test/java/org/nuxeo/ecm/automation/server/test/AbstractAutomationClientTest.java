@@ -109,7 +109,7 @@ public abstract class AbstractAutomationClientTest {
 
     @After
     public void tearDownTestFolder() throws Exception {
-        session.newRequest(DeleteDocument.ID).setInput(automationTestFolder).execute();
+        session.newRequest(DeleteDocument.ID).set("hard", true).setInput(automationTestFolder).execute();
     }
 
     protected File newFile(String content) throws IOException {
@@ -183,7 +183,7 @@ public abstract class AbstractAutomationClientTest {
         assertEquals("test", folder.getProperties().getString("dc:description"));
 
         // remove folder
-        session.newRequest(DeleteDocument.ID).setInput(folder).execute();
+        session.newRequest(DeleteDocument.ID).set("hard", true).setInput(folder).execute();
 
         Document folder1 = (Document) session.newRequest(CreateDocument.ID)
                                              .setInput(automationTestFolder)

@@ -345,7 +345,7 @@ public class CoreOperationsTest {
         chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
         chain.add(GetDocumentChildren.ID);
-        chain.add(DeleteDocument.ID);
+        chain.add(DeleteDocument.ID).set("hard", true);
         service.run(ctx, chain);
 
         assertEquals(0, session.getChildren(src.getRef()).size());

@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.io.marshallers.json.document.ACPJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BasePermissionsJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
+import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.permissions.ACLJsonEnricher;
@@ -385,13 +386,20 @@ public class DocumentBrowsingTest extends BaseTest {
         }
     }
 
+    /**
+     * @since 10.1
+     */
     @Test
-    public void iCanDeleteADocument() throws Exception {
+    public void iCanHardDeleteADocument() throws Exception {
         // Given a document
         DocumentModel doc = RestServerInit.getNote(0, session);
 
+        Map<String, String> headers = new HashMap<>();
+        headers.put(DocumentObject.HARD_DELETE_HEADER, "true");
+
         // When I do a DELETE request
-        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString())) {
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString(),
+                headers)) {
             assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
             fetchInvalidations();
@@ -400,13 +408,37 @@ public class DocumentBrowsingTest extends BaseTest {
         }
     }
 
+    /**
+     * @since 10.1
+     */
     @Test
-    public void iCanDeleteADocumentWithoutHeaders() throws Exception {
+    public void iCanMoveToTrashADocument() throws Exception {
         // Given a document
         DocumentModel doc = RestServerInit.getNote(0, session);
 
         // When I do a DELETE request
         try (CloseableClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            fetchInvalidations();
+            // Then the doc still exists but marked isTrashed
+            assertTrue(session.exists(doc.getRef()));
+            assertTrue(session.getDocument(doc.getRef()).isTrashed());
+        }
+    }
+
+
+    @Test
+    public void iCanDeleteADocumentWithoutHeaders() throws Exception {
+        // Given a document
+        DocumentModel doc = RestServerInit.getNote(0, session);
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(DocumentObject.HARD_DELETE_HEADER, "true");
+
+        // When I do a DELETE request
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString(),
+                headers)) {
             assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
             fetchInvalidations();

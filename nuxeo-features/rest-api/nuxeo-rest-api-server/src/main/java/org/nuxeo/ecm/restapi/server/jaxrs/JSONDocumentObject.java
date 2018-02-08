@@ -109,8 +109,19 @@ public class JSONDocumentObject extends DocumentObject {
 
     @DELETE
     public Response doDelete() {
-        super.doDelete();
-        return Response.noContent().build();
+        return super.doDelete();
+    }
+
+    @Override
+    protected Response getPostDeleteResponse() {
+        CoreSession session = ctx.getCoreSession();
+        if (session.exists(doc.getRef())) {
+            // Only moved to trash
+            return Response.ok(session.getDocument(doc.getRef())).build();
+        } else {
+            // Permanently deleted
+            return Response.noContent().build();
+        }
     }
 
     @Override

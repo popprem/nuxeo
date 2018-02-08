@@ -21,6 +21,9 @@
 
 package org.nuxeo.ecm.core.rest;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -38,10 +41,12 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -49,6 +54,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 @WebObject(type = "Document")
 @Produces("text/html; charset=UTF-8")
 public class DocumentObject extends DefaultObject {
+
+    public final static String HARD_DELETE_HEADER = "nx_hard_delete";
 
     protected DocumentModel doc;
 
@@ -106,20 +113,46 @@ public class DocumentObject extends DefaultObject {
         return getView("search").arg("query", query).arg("result", docs);
     }
 
+    /**
+     * @since 10.1
+     */
+    protected boolean isHardDelete() {
+        List<String> hardDeleteHeader = ctx.getHttpHeaders()
+                                           .getRequestHeader(HARD_DELETE_HEADER);
+        if (hardDeleteHeader != null && !hardDeleteHeader.isEmpty()) {
+            return Boolean.parseBoolean(hardDeleteHeader.get(0));
+        }
+        return false;
+    }
+
+    /**
+     * @since 10.1
+     */
+    protected Response getPostDeleteResponse() {
+        if (ctx.getCoreSession().exists(doc.getRef())) {
+            // Only moved to trash
+            return redirect(getPath());
+        } else {
+            // Permanently deleted
+            return redirect(prev != null ? prev.getPath() : ctx.getBasePath());
+        }
+    }
+
     @DELETE
     public Response doDelete() {
+        CoreSession session = ctx.getCoreSession();
         try {
-            CoreSession session = ctx.getCoreSession();
-            session.removeDocument(doc.getRef());
+            if (isHardDelete()) {
+                session.removeDocument(doc.getRef());
+            } else {
+                Framework.getService(TrashService.class).trashDocuments(Collections.singletonList(doc));
+            }
             session.save();
         } catch (NuxeoException e) {
             e.addInfo("Failed to delete document " + doc.getPathAsString());
             throw e;
         }
-        if (prev != null) { // show parent ? TODO: add getView(method) to be able to change the view method
-            return redirect(prev.getPath());
-        }
-        return redirect(ctx.getBasePath());
+        return getPostDeleteResponse();
     }
 
     @POST

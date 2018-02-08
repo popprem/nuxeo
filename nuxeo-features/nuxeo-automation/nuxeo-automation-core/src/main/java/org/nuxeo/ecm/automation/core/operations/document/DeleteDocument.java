@@ -18,14 +18,18 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.util.Collections;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.trash.TrashService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -38,28 +42,27 @@ public class DeleteDocument {
     @Context
     protected CoreSession session;
 
+    @Context
+    protected TrashService trashService;
+
+    @Param(name = "hard", required = false, description = "If false and Trash Service is enabled, document is moved to trash, permanently delete the document otherwise")
+    protected boolean hard = false;
+
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) {
-        // if (soft) {
-        // //TODO impl safe delete
-        // throw new UnsupportedOperationException("Safe delete not yet
-        // implemented");
-        // }
-        session.removeDocument(doc);
-        // TODO ctx.pop
-        return null;
+        return run(session.getDocument(doc));
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
-        // if (soft) {
-        // //TODO impl safe delete
-        // throw new UnsupportedOperationException("Safe delete not yet
-        // implemented");
-        // }
-        session.removeDocument(doc.getRef());
-        // TODO ctx.pop
-        return null;
+        if (hard) {
+            session.removeDocument(doc.getRef());
+            return null;
+        } else {
+            trashService.trashDocuments(Collections.singletonList(doc));
+            // return doc with updated deleted markers
+            return session.getDocument(doc.getRef());
+        }
     }
 
 }
