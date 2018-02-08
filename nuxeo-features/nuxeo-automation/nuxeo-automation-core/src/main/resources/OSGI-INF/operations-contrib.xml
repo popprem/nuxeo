@@ -47,6 +47,8 @@
         class="org.nuxeo.ecm.automation.core.operations.document.RestoreVersion"/>
     <operation
         class="org.nuxeo.ecm.automation.core.operations.document.DeleteDocument"/>
+    <operation
+        class="org.nuxeo.ecm.automation.core.operations.document.UndeleteDocument"/>
     <operation class="org.nuxeo.ecm.automation.core.operations.document.FetchDocument"/>
     <operation class="org.nuxeo.ecm.automation.core.operations.document.LockDocument"/>
     <operation
