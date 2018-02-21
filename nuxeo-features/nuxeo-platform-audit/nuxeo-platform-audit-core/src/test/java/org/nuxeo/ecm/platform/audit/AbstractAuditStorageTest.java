@@ -134,6 +134,13 @@ public abstract class AbstractAuditStorageTest {
     @Test
     public void testStartsWith() throws Exception {
         setUpTestData();
+        AbstractAuditBackend backend = (AbstractAuditBackend) this.auditBackend;
+
+        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(
+                Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS));
+        List<LogEntry> logs = backend.queryLogs(builder);
+        assertEquals(NUM_OF_EVENTS, logs.size());
+        
         assertStartsWithCount(NUM_OF_EVENTS, "/");
         assertStartsWithCount(NUM_OF_EVENTS, "/is");
         assertStartsWithCount(NUM_OF_EVENTS, "/is/");
