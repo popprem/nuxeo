@@ -20,13 +20,11 @@
 
 package org.nuxeo.ecm.platform.audit;
 
-import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.platform.audit.api.AuditLogger;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -37,6 +35,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
 public class TestAuditStorage extends AbstractAuditStorageTest {
+
+    @Inject
+    protected EventService eventService;
 
     @Test
     public void testStartsWith() throws Exception {
@@ -51,6 +52,6 @@ public class TestAuditStorage extends AbstractAuditStorageTest {
     protected void flush() throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        Assert.assertTrue(Framework.getService(AuditLogger.class).await(5, TimeUnit.SECONDS));
+        eventService.waitForAsyncCompletion();
     }
 }
