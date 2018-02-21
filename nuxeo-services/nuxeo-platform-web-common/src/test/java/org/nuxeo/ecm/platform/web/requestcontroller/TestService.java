@@ -30,28 +30,23 @@ import javax.inject.Inject;
 import javax.servlet.FilterConfig;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestService extends NXRuntimeTestCase {
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/web-request-controller-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/web-request-controller-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml")
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestService {
 
     @Inject
     protected RequestControllerService requestControllerService;
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-contrib.xml");
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        undeployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-contrib.xml");
-        undeployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-framework.xml");
-        super.tearDown();
-    }
 
     @Test
     public void testServiceRegistration() {
@@ -59,9 +54,8 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml")
     public void testServiceContrib() throws Exception {
-        pushInlineDeployments(
-                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml");
 
         String uri;
         RequestFilterConfig config;
@@ -120,9 +114,8 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml")
     public void testCorsContrib() throws Exception {
-        pushInlineDeployments(
-                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml");
 
         String uri;
         FilterConfig fc;
@@ -142,9 +135,8 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml")
     public void testHeadersContrib() throws Exception {
-        pushInlineDeployments(
-                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml");
 
         Map<String, String> rh = requestControllerService.getResponseHeaders();
         assertEquals(7, rh.size());

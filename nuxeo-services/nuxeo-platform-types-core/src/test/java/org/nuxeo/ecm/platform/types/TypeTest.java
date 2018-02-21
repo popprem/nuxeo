@@ -322,7 +322,6 @@ public class TypeTest extends NXRuntimeTestCase {
         assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
 
         // undeploy org.nuxeo.ecm.platform.types.core.tests:test-core-types-override-bundle.xml - last one deployed
-        // undeployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-core-types-override-bundle.xml");
         popInlineDeployments();
 
         assertSubtypes("MyDocType", testMyDocTypeSubtypes1);

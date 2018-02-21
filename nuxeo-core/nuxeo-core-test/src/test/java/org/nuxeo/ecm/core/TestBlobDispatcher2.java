@@ -82,7 +82,7 @@ public class TestBlobDispatcher2 {
                 assertEquals("foo", IOUtils.toString(in, UTF_8));
             }
         } finally {
-            harness.undeployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-blob-dispatcher.xml");
+            // harness.undeployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-blob-dispatcher.xml");
         }
     }
 

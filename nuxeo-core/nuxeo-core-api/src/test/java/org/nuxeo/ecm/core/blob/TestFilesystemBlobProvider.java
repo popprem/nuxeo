@@ -105,12 +105,8 @@ public class TestFilesystemBlobProvider {
         // check that we can allow user updates of blobs by configuration
         deployer.deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-fs-blobprovider-override.xml");
 
-        try {
-            blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
-            assertTrue(blobProvider.supportsUserUpdate());
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-fs-blobprovider-override.xml");
-        }
+        blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
+        assertTrue(blobProvider.supportsUserUpdate());
     }
 
     @Test

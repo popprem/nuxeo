@@ -254,10 +254,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     @Override
     public void fireFrameworkStarted() throws Exception {
         if (frameworkStarted) {
-            // avoid starting twice the runtime (fix situations where tests are starting themselves the runtime)
-            // If this happens the faulty test should be fixed
-            // TODO NXP-22534 - throw an exception?
-            return;
+            throw new IllegalStateException("fireFrameworkStarted must not be called more than once");
         }
         frameworkStarted = true;
         boolean txStarted = !TransactionHelper.isTransactionActiveOrMarkedRollback()
@@ -574,14 +571,14 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         context.undeploy(contrib);
     }
 
-    public void undeployContrib(String uri) throws Exception {
-        int i = uri.indexOf(':');
-        if (i == -1) {
-            throw new IllegalArgumentException(
-                    "Invalid deployment URI: " + uri + ". Must be of the form bundleSymbolicName:pathInBundleJar");
-        }
-        undeployContrib(uri.substring(0, i), uri.substring(i + 1));
-    }
+    // public void undeployContrib(String uri) throws Exception {
+    // int i = uri.indexOf(':');
+    // if (i == -1) {
+    // throw new IllegalArgumentException(
+    // "Invalid deployment URI: " + uri + ". Must be of the form bundleSymbolicName:pathInBundleJar");
+    // }
+    // undeployContrib(uri.substring(0, i), uri.substring(i + 1));
+    // }
 
     protected static boolean isVersionSuffix(String s) {
         if (s.length() == 0) {
