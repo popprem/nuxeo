@@ -23,6 +23,7 @@ Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/authentication-framework.xml,
  OSGI-INF/authentication-contrib.xml,
+ OSGI-INF/properties-config.xml,
  OSGI-INF/web-request-controller-framework.xml,
  OSGI-INF/web-request-controller-contrib.xml,
  OSGI-INF/exception-handling-service.xml,

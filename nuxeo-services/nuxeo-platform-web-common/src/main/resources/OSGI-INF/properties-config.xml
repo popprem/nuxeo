@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.common.properties.config">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Controls whether CSRF protection should be disabled.
+      Disabling CSRF protection is not recommended as it opens the server to CSRF attacks.
+      @since 10.1
+    </documentation>
+    <property name="nuxeo.csrf.protection.disabled">false</property>
+  </extension>
+
+</component>
