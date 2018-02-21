@@ -44,6 +44,20 @@ public interface Annotation {
     void setId(String id);
 
     /**
+     * Gets annotation type.
+     * 
+     * @return the type
+     */
+    String getType();
+
+    /**
+     * Sets annotation type.
+     * 
+     * @param type the type
+     */
+    void setType(String type);
+
+    /**
      * Gets the annotated document id.
      *
      * @return the annotated document id
@@ -84,6 +98,20 @@ public interface Annotation {
      * @param color the color, expressed in hexadecimal
      */
     void setColor(String color);
+
+    /**
+     * Gets annotation interior color.
+     *
+     * @return the color, expressed in hexadecimal
+     */
+    String getInteriorColor();
+
+    /**
+     * Sets annotation interior color.
+     *
+     * @param color the color, expressed in hexadecimal
+     */
+    void setInteriorColor(String color);
 
     /**
      * Gets annotation modification date.
@@ -211,5 +239,33 @@ public interface Annotation {
      * @param security the security
      */
     void setSecurity(String security);
+
+    /**
+     * Gets annotation content.
+     * 
+     * @return the content
+     */
+    String getContent();
+
+    /**
+     * Sets annotation content.
+     * 
+     * @param content the content
+     */
+    void setContent(String content);
+
+    /**
+     * Gets annotation parent id.
+     * 
+     * @return the parent id
+     */
+    String getParentId();
+
+    /**
+     * Sets annotation parent id
+     * 
+     * @param parentId the parent id
+     */
+    void setParentId(String parentId);
 
 }
