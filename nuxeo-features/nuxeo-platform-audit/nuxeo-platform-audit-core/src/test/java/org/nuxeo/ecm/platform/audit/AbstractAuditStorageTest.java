@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,8 +100,7 @@ public abstract class AbstractAuditStorageTest {
 
         AuditQueryBuilder builder = new AuditQueryBuilder().predicates(
                 Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS));
-        List<LogEntry> logs = backend.queryLogs(builder);
-        assertEquals(NUM_OF_EVENTS, logs.size());
+        checkNumberOfLoggedEvents(backend, builder);
 
         ScrollResult<String> scrollResult = backend.scroll(builder, 5, 10);
         int total = 0;
@@ -131,6 +131,17 @@ public abstract class AbstractAuditStorageTest {
         assertEquals(ID_FOR_AUDIT_STORAGE_TESTS, logEntry.getEventId());
     }
 
+    /**
+     *  Checks the logged events match.  Will debug the result if they don't.
+     */
+    public void checkNumberOfLoggedEvents(AbstractAuditBackend backend, AuditQueryBuilder builder) {
+        List<LogEntry> logs = backend.queryLogs(builder);
+        if (logs.size() != NUM_OF_EVENTS) {
+            System.out.println("ERROR: Incorrect log entries: "+ Arrays.toString(logs.toArray()));
+        }
+        assertEquals(NUM_OF_EVENTS, logs.size());
+    }
+
     @Test
     public void testStartsWith() throws Exception {
         setUpTestData();
@@ -138,9 +149,8 @@ public abstract class AbstractAuditStorageTest {
 
         AuditQueryBuilder builder = new AuditQueryBuilder().predicates(
                 Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS));
-        List<LogEntry> logs = backend.queryLogs(builder);
-        assertEquals(NUM_OF_EVENTS, logs.size());
-        
+        checkNumberOfLoggedEvents(backend, builder);
+
         assertStartsWithCount(NUM_OF_EVENTS, "/");
         assertStartsWithCount(NUM_OF_EVENTS, "/is");
         assertStartsWithCount(NUM_OF_EVENTS, "/is/");
