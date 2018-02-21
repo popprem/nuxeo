@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.audit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -32,7 +31,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
-@Deploy("org.nuxeo.ecm.core:OSGI-INF/test-uidgenerator-contrib.xml")
 public class TestAuditStorage extends AbstractAuditStorageTest {
 
     @Test

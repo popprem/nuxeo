@@ -39,8 +39,6 @@ import org.nuxeo.ecm.core.query.sql.model.Literals;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
-import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
-import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Predicates;
@@ -58,15 +56,10 @@ public abstract class AbstractAuditStorageTest {
 
     public static final String ID_FOR_AUDIT_STORAGE_TESTS = "ID_FOR_AUDIT_STORAGE_TESTS";
 
-    public static final String SEQ_NAME = "test-audit-seq";
-
     public static final int NUM_OF_EVENTS = 56;
 
     @Inject
     protected AuditBackend auditBackend;
-
-    @Inject
-    protected UIDGeneratorService uidGeneratorService;
 
     protected static ObjectMapper mapper = new ObjectMapper();
 
@@ -76,7 +69,6 @@ public abstract class AbstractAuditStorageTest {
     public void setUpTestData() throws Exception {
 
         AbstractAuditBackend backend = (AbstractAuditBackend) this.auditBackend;
-        UIDSequencer seq = uidGeneratorService.getSequencer();
         AuditQueryBuilder builder = new AuditQueryBuilder().predicates(
                 Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS));
         List<LogEntry> logs = backend.queryLogs(builder);
@@ -87,8 +79,7 @@ public abstract class AbstractAuditStorageTest {
 
             for (int i = 1; i <= NUM_OF_EVENTS; i++) {
                 ObjectNode logEntryJson = mapper.createObjectNode();
-                long eventId = seq.getNextLong(SEQ_NAME);
-                logEntryJson.put(LOG_ID, eventId);
+                logEntryJson.put(LOG_ID, Integer.valueOf(i).longValue());
                 logEntryJson.put(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS);
                 logEntryJson.put(LOG_DOC_PATH, i % 2 == 0 ? "/is/even" : "/is/odd");
                 jsonEntries.add(mapper.writeValueAsString(logEntryJson));
